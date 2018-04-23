@@ -26,6 +26,8 @@ public class SingerRunner implements Runnable {
         }
     }
 
+
+
     public static void main(String[] args) {
         int anzahlThreads;
 
@@ -34,6 +36,11 @@ public class SingerRunner implements Runnable {
 
         for (int x = anzahlThreads; x >= 0; x--) {
             new Thread(new SingerRunner(x)).start();
+        }
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

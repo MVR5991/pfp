@@ -1,4 +1,3 @@
-package uebung2;
 
 public class SingerRunner implements Runnable {
 

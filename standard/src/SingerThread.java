@@ -26,25 +26,26 @@ public class SingerThread extends Thread {
     }
 
     public static void main(String[] args) {
-        new SingerThread(Integer.MAX_VALUE).startSinging(args);
         try {
-            Thread.currentThread().join();
+            new SingerThread(Integer.MAX_VALUE).startSinging(args);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void startSinging(String[] args) {
+    public void startSinging(String[] args) throws InterruptedException {
         int anzahlThreads;
-
         if (args.length == 0) throw new IllegalArgumentException();
         anzahlThreads = Integer.valueOf(args[0]);
-
-        for (int x = anzahlThreads; x >= 0; x--) {
-            new SingerThread(x).start();
+        final Thread[] ts = new Thread[anzahlThreads];
+        for (int i = 0; i < anzahlThreads; i++) {
+            ts[i] = new SingerThread(i);
+            ts[i].start();
+        }
+        for (Thread t : ts) {
+            t.join();
         }
     }
-
 }
 

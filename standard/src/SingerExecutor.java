@@ -1,24 +1,20 @@
-
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class SingerExecutor {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         if (args.length == 0) throw new IllegalArgumentException();
-
-        ExecutorService es = Executors.newFixedThreadPool(Integer.valueOf(args[0]));
-        for (int x = Integer.valueOf(args[0]); x >= 0; x--) {
-            es.submit(new SingerRunner(x));
+        int anzahlThreads = Integer.valueOf(args[0]);
+        ExecutorService es = Executors.newFixedThreadPool(anzahlThreads);
+        for (int x = 0; x < anzahlThreads; x++) {
+            es.execute(new SingerRunner(x));
         }
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        es.shutdown();
+        es.awaitTermination(30, TimeUnit.MINUTES);
     }
 
 }

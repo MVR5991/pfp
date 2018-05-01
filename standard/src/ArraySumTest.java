@@ -59,6 +59,16 @@ public class ArraySumTest {
 		assertEquals(seqResult, result);
 	}
 
+	public void testArraySumSmallWithMoreThreadsTHanCalulations() {
+		final int size = 10;
+		final int threads = 24;
+		final long[] array = generateRandomArray(size);
+		final ArraySum sum = new ArraySumImpl();
+		final long result = sum.sum(array, threads);
+		final long seqResult = sum(array);
+		assertEquals(seqResult, result);
+	}
+
 	/**
 	 * Compares the parallel implementation with a sequential implementation
 	 * using a larger array and 2 to 14 threads.

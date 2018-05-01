@@ -26,20 +26,17 @@ public class SingerRunner implements Runnable {
     }
 
 
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         int anzahlThreads;
-
         if (args.length == 0) throw new IllegalArgumentException();
         anzahlThreads = Integer.valueOf(args[0]);
-
-        for (int x = anzahlThreads; x >= 0; x--) {
-            new Thread(new SingerRunner(x)).start();
+        final Thread[] ts = new Thread[anzahlThreads];
+        for (int x = 0; x < anzahlThreads; x++) {
+            ts[x] = new Thread(new SingerRunner(x));
+            ts[x].start();
         }
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (Thread t : ts) {
+            t.join();
         }
     }
 }

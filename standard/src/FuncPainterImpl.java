@@ -22,11 +22,9 @@ public class FuncPainterImpl implements FuncPainter {
         for (int x = 0; x < nThreads; x++) {
             Thread th = new Thread() {
                 Random generator = new Random();
-
                 public void run() {
                     while (!screen.finished()) {
-
-                        setValue(screen, func, generator.nextInt(maxHeight), generator.nextInt(maxWidth));
+                        setValue(screen, func, generator.nextInt(maxWidth), generator.nextInt(maxHeight));
                     }
 
                 }
@@ -46,7 +44,7 @@ public class FuncPainterImpl implements FuncPainter {
                 public void run() {
                     synchronized (PainterScreen.class) {
                         while (!screen.finished()) {
-                            FuncPainterImpl.this.setValue(screen, func, generator.nextInt(maxHeight), generator.nextInt(maxWidth));
+                            FuncPainterImpl.this.setValue(screen, func, generator.nextInt(maxWidth), generator.nextInt(maxHeight));
                         }
                     }
                 }
@@ -57,14 +55,20 @@ public class FuncPainterImpl implements FuncPainter {
 
     public void syncFreePaint(Screen screen, Function func, final int nThreads) {
         int maxHeight = screen.getHeight();
-        int maxWidth = screen.getWidth();
         int heightPerThread = maxHeight / nThreads;
         int remainingRows = maxHeight % nThreads;
         int startHeight = 0;
         for (int x = 0; x < nThreads; x++) {
-
-            th.start();
-            startHeight = startHeight + heightPerThread;
+            PainterThread pt;
+            if (remainingRows != 0) {
+                pt = new PainterThread(startHeight, startHeight + heightPerThread + 1, screen, func);
+                remainingRows--;
+                startHeight = startHeight + heightPerThread + 1;
+            } else {
+                pt = new PainterThread(startHeight, startHeight + heightPerThread, screen, func);
+                startHeight = startHeight + heightPerThread;
+            }
+            pt.start();
         }
     }
 
@@ -75,26 +79,34 @@ public class FuncPainterImpl implements FuncPainter {
 
         Screen randomScreen = new PainterScreen(width, height);
         Screen synchronizedScreen = new PainterScreen(width, height);
-//        Screen syncFreeScreen = new PainterScreen(width, height);
+        Screen syncFreeScreen = new PainterScreen(width, height);
+        Screen syncFreeScreenBig = new PainterScreen(400, 400);
+        p.syncFreePaint(syncFreeScreenBig, new ExampleFunction(), 4);
         p.randomPaint(randomScreen, new ExampleFunction(), 4);
         p.synchronizedPaint(synchronizedScreen, new ExampleFunction(), 4);
-//        p.syncFreePaint(syncFreeScreen, new ExampleFunction(), 4);
+        p.syncFreePaint(syncFreeScreen, new ExampleFunction(), 4);
     }
 }
 
 class PainterThread extends Thread {
 
-    private int startHeight;
+    private int rowFrom, rowTo;
+    private Screen screen;
+    private Function func;
 
-    public PainterThread(int startHeight, int iterateToHeight, int maxwidth){
-
+    public PainterThread(int rowFrom, int rowTo, Screen screen, Function func) {
+        this.rowFrom = rowFrom;
+        this.rowTo = rowTo;
+        this.screen = screen;
+        this.func = func;
     }
 
-    public void run(){
-        for(int hoehe = 0; hoehe <= heightPerThread; hoehe++){
-            for(int breite = 0; breite <= maxWidth; breite++){
-                FuncPainterImpl.this.setValue(screen, func, hoehe + localstartHeight, breite);
+    public void run() {
+        while (rowFrom < rowTo) {
+            for (int breite = 0; breite < screen.getWidth(); breite++) {
+                screen.setValue(breite, rowFrom, func.evaluate(breite, rowFrom));
             }
+            rowFrom++;
         }
     }
 }

@@ -22,20 +22,20 @@ public class FuncPainterImpl implements FuncPainter {
         int maxHeight = screen.getHeight();
         int maxWidth = screen.getWidth();
         for (int x = 0; x < nThreads; x++) {
-            Thread th = new Thread() {
+            new Thread() {
                 Random generator = new Random();
+
                 public void run() {
                     while (!screen.finished()) {
                         setValue(screen, func, generator.nextInt(maxWidth), generator.nextInt(maxHeight));
                     }
                 }
-            };
-            th.start();
+            }.start();
         }
     }
 
-    private void validateParameters(Screen screen, Function func, int threads){
-        if(screen == null || func == null || threads == 0){
+    private void validateParameters(Screen screen, Function func, int threads) {
+        if (screen == null || func == null || threads == 0) {
             throw new InvalidParameterException("Error: Calculation with given parameters not possible");
         }
 
@@ -46,7 +46,7 @@ public class FuncPainterImpl implements FuncPainter {
         int maxHeight = screen.getHeight();
         int maxWidth = screen.getWidth();
         for (int x = 0; x < nThreads; x++) {
-            Thread th = new Thread() {
+            new Thread() {
                 Random generator = new Random();
 
                 public void run() {
@@ -56,8 +56,7 @@ public class FuncPainterImpl implements FuncPainter {
                         }
                     }
                 }
-            };
-            th.start();
+            }.start();
         }
     }
 

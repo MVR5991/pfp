@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.security.InvalidParameterException;
 import java.util.Random;
 
 public class FuncPainterImpl implements FuncPainter {
@@ -17,6 +18,7 @@ public class FuncPainterImpl implements FuncPainter {
     }
 
     public void randomPaint(Screen screen, Function func, int nThreads) {
+        validateParameters(screen, func, nThreads);
         int maxHeight = screen.getHeight();
         int maxWidth = screen.getWidth();
         for (int x = 0; x < nThreads; x++) {
@@ -26,15 +28,21 @@ public class FuncPainterImpl implements FuncPainter {
                     while (!screen.finished()) {
                         setValue(screen, func, generator.nextInt(maxWidth), generator.nextInt(maxHeight));
                     }
-
                 }
-
             };
             th.start();
         }
     }
 
+    private void validateParameters(Screen screen, Function func, int threads){
+        if(screen == null || func == null || threads == 0){
+            throw new InvalidParameterException("Error: Calculation with given parameters not possible");
+        }
+
+    }
+
     public void synchronizedPaint(Screen screen, Function func, int nThreads) {
+        validateParameters(screen, func, nThreads);
         int maxHeight = screen.getHeight();
         int maxWidth = screen.getWidth();
         for (int x = 0; x < nThreads; x++) {
@@ -54,6 +62,7 @@ public class FuncPainterImpl implements FuncPainter {
     }
 
     public void syncFreePaint(Screen screen, Function func, final int nThreads) {
+        validateParameters(screen, func, nThreads);
         int maxHeight = screen.getHeight();
         int heightPerThread = maxHeight / nThreads;
         int remainingRows = maxHeight % nThreads;
@@ -85,6 +94,7 @@ public class FuncPainterImpl implements FuncPainter {
         p.randomPaint(randomScreen, new ExampleFunction(), 4);
         p.synchronizedPaint(synchronizedScreen, new ExampleFunction(), 4);
         p.syncFreePaint(syncFreeScreen, new ExampleFunction(), 4);
+        p.syncFreePaint(null, new ExampleFunction(), 56);
     }
 }
 

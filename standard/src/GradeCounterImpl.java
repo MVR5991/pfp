@@ -4,27 +4,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GradeCounterImpl implements GradeCounter {
 
-    private void initialiseHashMap(final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
-        final String[] POSSIBLE_GRADES = {
-                "1.0", "1.3", "1.7",
-                "2.0", "2.3", "2.7",
-                "3.0", "3.3", "3.7",
-                "4.0", "4.3", "4.7",
-                "5.0"
-        };
-
-        for (final String s : POSSIBLE_GRADES) {
-            gradesMap.put(s, new AtomicInteger(0));
-        }
-
-    }
-
     @Override
     public GradeCount[] count(final String[] grades, final int nThreads) {
         final ConcurrentHashMap<String, AtomicInteger> gradesMap = new ConcurrentHashMap<>();
         final Thread[] ts;
-
-        initialiseHashMap(gradesMap);
         ts = initialiseAndStartThreads(grades, nThreads, gradesMap);
         joinThreads(ts);
         return fillResultArray(gradesMap);
@@ -93,6 +76,7 @@ class CounterThread extends Thread {
     public void run() {
         for (int i = startIndex; i < endIndex; i++) {
             final String grade = grades[i];
+            gradesMap.putIfAbsent(grade, new AtomicInteger(0));
             gradesMap.get(grade).getAndIncrement();
         }
     }

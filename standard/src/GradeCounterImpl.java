@@ -4,58 +4,84 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GradeCounterImpl implements GradeCounter {
 
-    private ConcurrentHashMap<String, Integer> gradesMap;
+    private void initialiseHashMap(final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
+        final String[] POSSIBLE_GRADES = {
+                "1.0", "1.3", "1.7",
+                "2.0", "2.3", "2.7",
+                "3.0", "3.3", "3.7",
+                "4.0", "4.3", "4.7",
+                "5.0"
+        };
+
+        for (final String s : POSSIBLE_GRADES) {
+            gradesMap.put(s, new AtomicInteger(0));
+        }
+
+    }
 
     @Override
-    public GradeCount[] count(String[] grades, int nThreads) {
-        final Thread[] ts = new Thread[nThreads];
-        final GradeCount[] result;
-        gradesMap = new ConcurrentHashMap();
+    public GradeCount[] count(final String[] grades, final int nThreads) {
+        final ConcurrentHashMap<String, AtomicInteger> gradesMap = new ConcurrentHashMap<>();
+        final Thread[] ts;
 
+        initialiseHashMap(gradesMap);
+        ts = initialiseAndStartThreads(grades, nThreads, gradesMap);
+        joinThreads(ts);
+        return fillResultArray(gradesMap);
+    }
+
+    private Thread[] initialiseAndStartThreads(final String[] grades, int nThreads, final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
+        final Thread[] ts = new Thread[nThreads];
         int numberOfGrades = grades.length;
-        int gradesPerThread = numberOfGrades/ nThreads;
         int remainingGrades = numberOfGrades % nThreads;
+        final int gradesPerThread = numberOfGrades / nThreads;
         int startIndex = 0;
 
-        for (int x = 0; x < nThreads; x++) {
-            CounterThread pt;
+        for (int threadNumberIndex = 0; threadNumberIndex < nThreads; threadNumberIndex++) {
+            final CounterThread pt;
             if (remainingGrades != 0) {
-                pt = new CounterThread(startIndex, startIndex + gradesPerThread+ 1, gradesMap, grades);
+                pt = new CounterThread(startIndex, startIndex + gradesPerThread + 1, gradesMap, grades);
                 remainingGrades--;
-                startIndex = startIndex + gradesPerThread+ 1;
+                startIndex = startIndex + gradesPerThread + 1;
             } else {
                 pt = new CounterThread(startIndex, startIndex + gradesPerThread, gradesMap, grades);
                 startIndex = startIndex + gradesPerThread;
             }
-            ts[x] = pt;
+            ts[threadNumberIndex] = pt;
             pt.start();
         }
-        for (Thread t : ts) {
+        return ts;
+    }
+
+    private void joinThreads(final Thread[] ts) {
+        for (final Thread t : ts) {
             try {
                 t.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private GradeCount[] fillResultArray(final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
+        GradeCount[] result;
         result = new GradeCount[gradesMap.size()];
-        int index = 0;
-        for(Map.Entry<String, Integer> e : gradesMap.entrySet()){
-            result[index] = new GradeCount(e.getKey(), e.getValue());
-            index++;
+        int mapIteratorIndex = 0;
+        for (Map.Entry<String, AtomicInteger> e : gradesMap.entrySet()) {
+            result[mapIteratorIndex++] = new GradeCount(e);
         }
         return result;
     }
 }
 
-class CounterThread extends Thread{
-
+class CounterThread extends Thread {
 
     private final int startIndex;
     private final int endIndex;
-    private final ConcurrentHashMap<String, Integer> gradesMap;
+    private final ConcurrentHashMap<String, AtomicInteger> gradesMap;
     private final String[] grades;
 
-    public CounterThread(int startIndex, int endIndex, ConcurrentHashMap<String, Integer> gradesMap, String[] grades) {
+    CounterThread(int startIndex, int endIndex, ConcurrentHashMap<String, AtomicInteger> gradesMap, String[] grades) {
 
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -65,31 +91,9 @@ class CounterThread extends Thread{
 
     @Override
     public void run() {
-//        synchronized (GradeCounterImpl.class){
-
-
-        for(int i = startIndex; i < endIndex; i++){
-            String grade = grades[i];
-
-            Integer oldValue, newValue;
-//            do {
-//                oldVal = gradesMap.get(grade);
-//                newVal = (oldVal == null) ? 1 : (oldVal + 1);
-//                if(oldVal == null) oldVal = 0;
-//            } while (!gradesMap.replace(grade, oldVal, newVal));
-//        }
-            Integer val = 1;
-            if(!gradesMap.containsKey(grade)){
-                 val = gradesMap.putIfAbsent(grade,1);
-                System.out.println(val);
-            }
-             if (val != null) {
-                do {
-                     oldValue = gradesMap.get(grade);
-                     newValue = oldValue + 1;
-                }while(!gradesMap.replace(grade,oldValue,newValue));
-            }
-
+        for (int i = startIndex; i < endIndex; i++) {
+            final String grade = grades[i];
+            gradesMap.get(grade).getAndIncrement();
         }
     }
 }

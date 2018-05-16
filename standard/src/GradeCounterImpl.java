@@ -1,6 +1,5 @@
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GradeCounterImpl implements GradeCounter {
 
@@ -13,16 +12,16 @@ public class GradeCounterImpl implements GradeCounter {
         gradesMap = new ConcurrentHashMap();
 
         int numberOfGrades = grades.length;
-        int gradesPerThread = numberOfGrades/ nThreads;
+        int gradesPerThread = numberOfGrades / nThreads;
         int remainingGrades = numberOfGrades % nThreads;
         int startIndex = 0;
 
         for (int x = 0; x < nThreads; x++) {
             CounterThread pt;
             if (remainingGrades != 0) {
-                pt = new CounterThread(startIndex, startIndex + gradesPerThread+ 1, gradesMap, grades);
+                pt = new CounterThread(startIndex, startIndex + gradesPerThread + 1, gradesMap, grades);
                 remainingGrades--;
-                startIndex = startIndex + gradesPerThread+ 1;
+                startIndex = startIndex + gradesPerThread + 1;
             } else {
                 pt = new CounterThread(startIndex, startIndex + gradesPerThread, gradesMap, grades);
                 startIndex = startIndex + gradesPerThread;
@@ -39,7 +38,7 @@ public class GradeCounterImpl implements GradeCounter {
         }
         result = new GradeCount[gradesMap.size()];
         int index = 0;
-        for(Map.Entry<String, Integer> e : gradesMap.entrySet()){
+        for (Map.Entry<String, Integer> e : gradesMap.entrySet()) {
             result[index] = new GradeCount(e.getKey(), e.getValue());
             index++;
         }
@@ -47,7 +46,7 @@ public class GradeCounterImpl implements GradeCounter {
     }
 }
 
-class CounterThread extends Thread{
+class CounterThread extends Thread {
 
 
     private final int startIndex;
@@ -65,29 +64,20 @@ class CounterThread extends Thread{
 
     @Override
     public void run() {
-//        synchronized (GradeCounterImpl.class){
 
-
-        for(int i = startIndex; i < endIndex; i++){
+        for (int i = startIndex; i < endIndex; i++) {
             String grade = grades[i];
 
             Integer oldValue, newValue;
-//            do {
-//                oldVal = gradesMap.get(grade);
-//                newVal = (oldVal == null) ? 1 : (oldVal + 1);
-//                if(oldVal == null) oldVal = 0;
-//            } while (!gradesMap.replace(grade, oldVal, newVal));
-//        }
-            Integer val = 1;
-            if(!gradesMap.containsKey(grade)){
-                 val = gradesMap.putIfAbsent(grade,1);
-                System.out.println(val);
+            Integer containsKey = 1;
+            if (!gradesMap.containsKey(grade)) {
+                containsKey = gradesMap.putIfAbsent(grade, 1);
             }
-             if (val != null) {
+            if (containsKey != null) {
                 do {
-                     oldValue = gradesMap.get(grade);
-                     newValue = oldValue + 1;
-                }while(!gradesMap.replace(grade,oldValue,newValue));
+                    oldValue = gradesMap.get(grade);
+                    newValue = oldValue + 1;
+                } while (!gradesMap.replace(grade, oldValue, newValue));
             }
 
         }

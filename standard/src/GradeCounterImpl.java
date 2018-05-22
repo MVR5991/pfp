@@ -16,8 +16,8 @@ public class GradeCounterImpl implements GradeCounter {
     private Thread[] initialiseAndStartThreads(final String[] grades, int nThreads, final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
         final Thread[] ts = new Thread[nThreads];
         int numberOfGrades = grades.length;
+        int gradesPerThread = numberOfGrades / nThreads;
         int remainingGrades = numberOfGrades % nThreads;
-        final int gradesPerThread = numberOfGrades / nThreads;
         int startIndex = 0;
 
         for (int threadNumberIndex = 0; threadNumberIndex < nThreads; threadNumberIndex++) {
@@ -49,6 +49,7 @@ public class GradeCounterImpl implements GradeCounter {
     private GradeCount[] fillResultArray(final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
         GradeCount[] result;
         result = new GradeCount[gradesMap.size()];
+        int index = 0;
         int mapIteratorIndex = 0;
         for (Map.Entry<String, AtomicInteger> e : gradesMap.entrySet()) {
             result[mapIteratorIndex++] = new GradeCount(e);
@@ -74,6 +75,8 @@ class CounterThread extends Thread {
 
     @Override
     public void run() {
+
+
         for (int i = startIndex; i < endIndex; i++) {
             final String grade = grades[i];
             gradesMap.putIfAbsent(grade, new AtomicInteger(0));

@@ -1,23 +1,27 @@
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GradeCounterImpl implements GradeCounter {
 
-    private ConcurrentHashMap<String, Integer> gradesMap;
-
     @Override
-    public GradeCount[] count(String[] grades, int nThreads) {
-        final Thread[] ts = new Thread[nThreads];
-        final GradeCount[] result;
-        gradesMap = new ConcurrentHashMap();
+    public GradeCount[] count(final String[] grades, final int nThreads) {
+        final ConcurrentHashMap<String, AtomicInteger> gradesMap = new ConcurrentHashMap<>();
+        final Thread[] ts;
+        ts = initialiseAndStartThreads(grades, nThreads, gradesMap);
+        joinThreads(ts);
+        return fillResultArray(gradesMap);
+    }
 
+    private Thread[] initialiseAndStartThreads(final String[] grades, int nThreads, final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
+        final Thread[] ts = new Thread[nThreads];
         int numberOfGrades = grades.length;
         int gradesPerThread = numberOfGrades / nThreads;
         int remainingGrades = numberOfGrades % nThreads;
         int startIndex = 0;
 
-        for (int x = 0; x < nThreads; x++) {
-            CounterThread pt;
+        for (int threadNumberIndex = 0; threadNumberIndex < nThreads; threadNumberIndex++) {
+            final CounterThread pt;
             if (remainingGrades != 0) {
                 pt = new CounterThread(startIndex, startIndex + gradesPerThread + 1, gradesMap, grades);
                 remainingGrades--;
@@ -26,21 +30,29 @@ public class GradeCounterImpl implements GradeCounter {
                 pt = new CounterThread(startIndex, startIndex + gradesPerThread, gradesMap, grades);
                 startIndex = startIndex + gradesPerThread;
             }
-            ts[x] = pt;
+            ts[threadNumberIndex] = pt;
             pt.start();
         }
-        for (Thread t : ts) {
+        return ts;
+    }
+
+    private void joinThreads(final Thread[] ts) {
+        for (final Thread t : ts) {
             try {
                 t.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private GradeCount[] fillResultArray(final ConcurrentHashMap<String, AtomicInteger> gradesMap) {
+        GradeCount[] result;
         result = new GradeCount[gradesMap.size()];
         int index = 0;
-        for (Map.Entry<String, Integer> e : gradesMap.entrySet()) {
-            result[index] = new GradeCount(e.getKey(), e.getValue());
-            index++;
+        int mapIteratorIndex = 0;
+        for (Map.Entry<String, AtomicInteger> e : gradesMap.entrySet()) {
+            result[mapIteratorIndex++] = new GradeCount(e);
         }
         return result;
     }
@@ -48,13 +60,12 @@ public class GradeCounterImpl implements GradeCounter {
 
 class CounterThread extends Thread {
 
-
     private final int startIndex;
     private final int endIndex;
-    private final ConcurrentHashMap<String, Integer> gradesMap;
+    private final ConcurrentHashMap<String, AtomicInteger> gradesMap;
     private final String[] grades;
 
-    public CounterThread(int startIndex, int endIndex, ConcurrentHashMap<String, Integer> gradesMap, String[] grades) {
+    CounterThread(int startIndex, int endIndex, ConcurrentHashMap<String, AtomicInteger> gradesMap, String[] grades) {
 
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -65,21 +76,11 @@ class CounterThread extends Thread {
     @Override
     public void run() {
 
+
         for (int i = startIndex; i < endIndex; i++) {
-            String grade = grades[i];
-
-            Integer oldValue, newValue;
-            Integer containsKey = 1;
-            if (!gradesMap.containsKey(grade)) {
-                containsKey = gradesMap.putIfAbsent(grade, 1);
-            }
-            if (containsKey != null) {
-                do {
-                    oldValue = gradesMap.get(grade);
-                    newValue = oldValue + 1;
-                } while (!gradesMap.replace(grade, oldValue, newValue));
-            }
-
+            final String grade = grades[i];
+            gradesMap.putIfAbsent(grade, new AtomicInteger(0));
+            gradesMap.get(grade).getAndIncrement();
         }
     }
 }

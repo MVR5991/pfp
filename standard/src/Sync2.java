@@ -16,6 +16,11 @@ public class Sync2 {
 
     class MyThread2 extends Thread{
         public void run() {
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             synchronized(lock) {
                 counter++;
             }

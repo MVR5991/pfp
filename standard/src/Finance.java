@@ -38,6 +38,13 @@ public class Finance {
             threads[x] = thread;
             thread.start();
         }
+        for(TransferThread thready : threads){
+            try {
+                thready.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -45,16 +52,14 @@ public class Finance {
 //        runTransfers(new DeadlockBank(), 3);
 //        runTransfers(new QuickLockingBank(), 5);
 //        runTransfers(new OrderedBank(), 7);
-        runTransfers(new ManagedBank(), 6);
+        runTransfers(new ManagedBank(),90);
     }
 
 
-    static class TransferThread extends Thread {
+    protected static class TransferThread extends Thread {
         private Account quellKonto;
         private Account zielKonto;
         private Bank bank;
-        private int FROZEN = 0;
-        private int HELL = 666;
 
         TransferThread(Account quellKonto, Account zielKonto, Bank bank) {
             this.quellKonto = quellKonto;
@@ -64,7 +69,7 @@ public class Finance {
 
         @Override
         public void run() {
-            while(HELL != FROZEN){
+            while(true){
                 transferRandomMoney(quellKonto.getId(),bank,quellKonto, zielKonto );
             }
 

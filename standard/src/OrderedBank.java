@@ -5,8 +5,12 @@ public class OrderedBank implements Bank {
         if (fromAccount.getMoney() >= money) {
             if (fromAccount.getId() < toAccount.getId()) {
                 transferMoney(fromAccount, toAccount, money);
-            } else {
+            } else if (fromAccount.getId() > toAccount.getId()) {
                 transferMoney(toAccount, fromAccount, money);
+            } else {
+                synchronized (OrderedBank.class){
+                    transferMoney(toAccount, fromAccount, money);
+                }
             }
             return true;
         }

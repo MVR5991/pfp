@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public class ExampleFunction implements Function {
 	public double evaluate(final int x, final int y) {
 		final double nx = (x - 35) / 40.0;

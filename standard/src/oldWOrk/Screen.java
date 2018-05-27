@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public interface Screen {
 	/**
 	 * Sets the point (x, y) to the specified value.

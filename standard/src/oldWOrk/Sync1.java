@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public class Sync1 {
     int x = 0; int y = 0;
 

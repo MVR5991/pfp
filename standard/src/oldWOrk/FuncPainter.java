@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public interface FuncPainter {
 	/**
 	 * Evaluate a two-dimensional function at random points

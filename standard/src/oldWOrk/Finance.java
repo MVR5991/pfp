@@ -1,3 +1,5 @@
+package oldWOrk;
+
 import java.util.Random;
 
 public class Finance {
@@ -49,9 +51,9 @@ public class Finance {
 
 
     public static void main(String[] args) {
-//        runTransfers(new DeadlockBank(), 3);
-//        runTransfers(new QuickLockingBank(), 5);
-//        runTransfers(new OrderedBank(), 7);
+//        runTransfers(new oldWOrk.DeadlockBank(), 3);
+//        runTransfers(new oldWOrk.QuickLockingBank(), 5);
+//        runTransfers(new oldWOrk.OrderedBank(), 7);
         runTransfers(new ManagedBank(),90);
     }
 

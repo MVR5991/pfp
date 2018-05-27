@@ -1,4 +1,5 @@
-import java.awt.*;
+package oldWOrk;
+
 import java.security.InvalidParameterException;
 import java.util.Random;
 

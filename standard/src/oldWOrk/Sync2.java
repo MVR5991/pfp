@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public class Sync2 {
     Object lock = new Object();
     public int counter = 0;

@@ -1,3 +1,5 @@
+package oldWOrk;
+
 /**
  * An interface for counters of grades.
  */

@@ -1,9 +1,10 @@
+package oldWOrk;
 
-public class SingerThread extends Thread {
+public class SingerRunner implements Runnable {
 
     private int THREADNUMMER;
 
-    public SingerThread(int threadnummer) {
+    public SingerRunner(int threadnummer) {
         this.THREADNUMMER = threadnummer;
     }
 
@@ -25,27 +26,18 @@ public class SingerThread extends Thread {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            new SingerThread(Integer.MAX_VALUE).startSinging(args);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-    }
-
-    public void startSinging(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         int anzahlThreads;
         if (args.length == 0) throw new IllegalArgumentException();
         anzahlThreads = Integer.valueOf(args[0]);
         final Thread[] ts = new Thread[anzahlThreads];
-        for (int i = 0; i < anzahlThreads; i++) {
-            ts[i] = new SingerThread(i);
-            ts[i].start();
+        for (int x = 0; x < anzahlThreads; x++) {
+            ts[x] = new Thread(new SingerRunner(x));
+            ts[x].start();
         }
         for (Thread t : ts) {
             t.join();
         }
     }
 }
-

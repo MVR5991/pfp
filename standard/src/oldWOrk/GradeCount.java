@@ -1,3 +1,5 @@
+package oldWOrk;
+
 import java.util.Map;
 
 /**
@@ -14,7 +16,7 @@ public class GradeCount implements Comparable<GradeCount> {
 	public int count;
 
 	/**
-	 * Creates a new GradeCount based on the specified grade and count.
+	 * Creates a new oldWOrk.GradeCount based on the specified grade and count.
 	 *
 	 * @param grade the grade.
 	 * @param count the number of occurrences of grade.
@@ -25,11 +27,11 @@ public class GradeCount implements Comparable<GradeCount> {
 	}
 
 	/**
-	 * Creates a new GradeCount based on the specified map entry. This is useful
+	 * Creates a new oldWOrk.GradeCount based on the specified map entry. This is useful
 	 * if you iterate over the elements of an entry set of a map and want to
-	 * create GradeCount objects for each entry.
+	 * create oldWOrk.GradeCount objects for each entry.
 	 *
-	 * @param entry the map entry that shall be converted to a GradeCount
+	 * @param entry the map entry that shall be converted to a oldWOrk.GradeCount
 	 */
 	public GradeCount(final Map.Entry<String, ? extends Number> entry) {
 		this.grade = entry.getKey();

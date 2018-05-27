@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public interface Function {
 	/**
 	 * Evaluate the function at point (x, y)

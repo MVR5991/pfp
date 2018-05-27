@@ -1,7 +1,7 @@
+package oldWOrk;
+
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cashier {
@@ -22,7 +22,7 @@ public class Cashier {
         }
     }
 
-//    private void forceTransaction(Account fromAccount, Account toAccount) {
+//    private void forceTransaction(oldWOrk.Account fromAccount, oldWOrk.Account toAccount) {
 //        if(isAccountBeingUsedForTransaction(fromAccount, toAccount)){
 //            try {
 //                Thread.sleep(100);

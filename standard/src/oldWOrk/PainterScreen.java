@@ -1,3 +1,5 @@
+package oldWOrk;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,7 +10,7 @@ import javax.swing.JPanel;
 import static javax.swing.SwingUtilities.*;
 
 /**
- * A thread-safe pixel-based screen.
+ * oldWOrk.A thread-safe pixel-based screen.
  *
  * @author Marius Kamp <marius.kamp@fau.de>
  */
@@ -23,7 +25,7 @@ public class PainterScreen implements Screen {
 
 
 	/**
-	 * Creates a new instance of PainterScreen.
+	 * Creates a new instance of oldWOrk.PainterScreen.
 	 *
 	 * @param width
 	 * 		The number of colored elements in x-direction
@@ -37,7 +39,7 @@ public class PainterScreen implements Screen {
 
 
 	/**
-	 * Creates a new instance of PainterScreen.
+	 * Creates a new instance of oldWOrk.PainterScreen.
 	 *
 	 * @param width
 	 * 		The number of colored elements in x-direction
@@ -121,7 +123,7 @@ public class PainterScreen implements Screen {
 					));
 
 					mainFrame.setContentPane(colorPanel);
-					mainFrame.setTitle("FuncPainter");
+					mainFrame.setTitle("oldWOrk.FuncPainter");
 					mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 					mainFrame.pack();

@@ -1,10 +1,7 @@
-import java.util.Queue;
 import java.util.concurrent.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.lang.Thread.sleep;
 
 public class FixedThreadCompletionService<V> implements SimpleCompletionService<V> {
     private Worker[] workers;
@@ -22,6 +19,7 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
         }
 
     }
+
     private class Worker extends Thread {
         private int threads;
 
@@ -33,7 +31,7 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
         private void doWork() {
 
             while (!arbeitsAuftraege.isEmpty() || !isShutdown()) {
-                FutureTask<V> currentTask = null;
+                FutureTask<V> currentTask;
                 try {
                     currentTask = arbeitsAuftraege.poll();
                     if (currentTask != null) {
@@ -47,7 +45,8 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
         }
 
         private void terminationHandler() {
-            for (int x = 0; x < currentlyInMethod.get(); x++) {
+            int y = currentlyInMethod.get();
+            for (int x = 0; x < y; x++) {
                 try {
                     fertigeArbeitsAuftraege.put(poisonpill);
                 } catch (InterruptedException e) {
@@ -56,13 +55,12 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
             }
             terminated = true;
         }
+
         public void run() {
             doWork();
-            // If it is the last thread that has finished.
             int c = runCounter.incrementAndGet();
             if (c == threads) {
                 terminationHandler();
-                System.out.println("Termination Handler invoked");
             }
             interrupt();
         }
@@ -79,7 +77,7 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
     }
 
     @Override
-    public synchronized boolean isShutdown() {
+    public boolean isShutdown() {
         return shutdown.get();
     }
 
@@ -106,7 +104,7 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
     @Override
     public Future<V> poll() {
         FutureTask result = fertigeArbeitsAuftraege.poll();
-        if (result == poisonpill) {
+        if (result.equals(poisonpill)) {
             try {
                 fertigeArbeitsAuftraege.put(poisonpill);
             } catch (InterruptedException e) {
@@ -124,10 +122,8 @@ public class FixedThreadCompletionService<V> implements SimpleCompletionService<
             currentlyInMethod.getAndDecrement();
             return null;
         }
-        System.out.println("SO Many People here:" + currentlyInMethod);
         FutureTask doneTask = fertigeArbeitsAuftraege.take();
-        if (doneTask == poisonpill) {
-            fertigeArbeitsAuftraege.put(poisonpill);
+        if (doneTask.equals(poisonpill)) {
             currentlyInMethod.getAndDecrement();
             return null;
         }

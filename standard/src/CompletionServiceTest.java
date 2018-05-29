@@ -10,9 +10,16 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-
+@RunWith(Parameterized.class)
 public class CompletionServiceTest {
+
+	@Parameterized.Parameters
+	public static Object[][] data() {
+		return new Object[50][0];
+	}
 
 	@Test(timeout=1000)
 	public void testSubmitShutdownAndTakeSingleThread() throws InterruptedException {
@@ -161,10 +168,11 @@ public class CompletionServiceTest {
 			threads[i] = new MyThread(i, cs);
 			threads[i].start();
 		}
-
+		System.out.println("Threads started");
 		for (int i = 0; i < 4; i++) {
 			threads[i].join();
 		}
+		System.out.println("Threads joined");
 
 		Future<Integer> submitReturn = null;
 		Future<Integer> takeReturn = null;

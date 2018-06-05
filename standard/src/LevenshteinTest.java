@@ -82,7 +82,7 @@ public class LevenshteinTest {
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 3);
-		//print(solution);
+		print(solution);
 	}
 
 
@@ -95,7 +95,7 @@ public class LevenshteinTest {
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 2);
-		//print(solution);
+		print(solution);
 	}
 
 	
@@ -159,8 +159,8 @@ public class LevenshteinTest {
 
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
+		print(solution);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 2);
-		//print(solution);
 	}
 
 
@@ -172,8 +172,8 @@ public class LevenshteinTest {
 
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
+		print(solution);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 3);
-		//print(solution);
 	}
 
 
@@ -185,8 +185,8 @@ public class LevenshteinTest {
 
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
+		print(solution);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 3);
-		//print(solution);
 	}
 
 

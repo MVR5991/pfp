@@ -222,7 +222,7 @@ public class LevenshteinTest {
 	public void testMultipleThreadsExchanger() {
 		for (int i = 1; i < 10; i++){
 			final Levenshtein l = new LevenshteinExchanger(i);
-
+			System.out.println(i);
 			int[][] solution = l.computeLevenshtein("HABIT".toCharArray(), "HOBBIT".toCharArray());
 
 			assertNotNull("threads = " + i, solution);

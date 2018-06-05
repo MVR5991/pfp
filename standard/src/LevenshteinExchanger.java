@@ -1,7 +1,7 @@
 import java.util.concurrent.Exchanger;
 
 public class LevenshteinExchanger extends Levenshtein {
-    volatile private int levenStheinMatrix[][];
+    private int levenStheinMatrix[][];
     private ComputeLevenstheinThread[] threads;
     private Exchanger[] exchanger;
     private int numberofThreads;
@@ -55,8 +55,10 @@ public class LevenshteinExchanger extends Levenshtein {
 
     private void setExchangers(int x) {
         if (x == 0) {
-            threads[x].setExchangerLeft(null);
-            threads[x].setExchangerRight(exchanger[x]);
+            if(exchanger.length > 0){
+                threads[x].setExchangerLeft(null);
+                threads[x].setExchangerRight(exchanger[x]);
+            }
         } else if (x == numberofThreads - 1) {
             threads[x].setExchangerLeft(exchanger[x - 1]);
             threads[x].setExchangerRight(null);
@@ -91,24 +93,6 @@ public class LevenshteinExchanger extends Levenshtein {
             this.wordHorizontal = wordHorizontal;
             this.wordVertical = wordVertical;
         }
-
-
-//                [0, 1, 2, 3, 4, 5, 6, 7, 8]
-//                [1, 0, 1, 2, 3, 4, 5, 6, 7]
-//                [2, 1, 1, 2, 2, 3, 4, 5, 6]
-//                [3, 2, 2, 2, 3, 3, 4, 5, 6]
-//                [4, 3, 3, 3, 3, 4, 3, 4, 5]
-//                [5, 4, 3, 4, 4, 4, 4, 3, 4]
-//                [6, 5, 4, 4, 5, 5, 5, 4, 3]
-
-
-//                [0, 1, 2, 3, 4, 5, 6, 7, 8]
-//                [1, 0, 1, 2, 3, 4, 5, 6, 7]
-//                [2, 1, 1, 2, 2, 1, 1, 1, 1]
-//                [3, 2, 2, 2, 3, 2, 2, 2, 2]
-//                [4, 1, 1, 1, 1, 1, 2, 1, 1]
-//                [5, 2, 1, 2, 2, 2, 2, 2, 2]
-//                [6, 3, 2, 2, 3, 3, 3, 3, 2]
 
         @Override
         public void run() {

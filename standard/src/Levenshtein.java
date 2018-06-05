@@ -20,8 +20,26 @@ public abstract class Levenshtein {
 	 * @return
 	 */
 	public int computeValue(int row, int column, int[][] table, char[] wordHorizontal, char[] wordVertical) {
-		// TODO
-		return -1;
+		if(row == 0 && column == 0){
+			return 0;
+		} else if(row >=1 && column == 0){
+			return row;
+		}else if(column >=1 && row == 0){
+			return column;
+		}
+		int smallest;
+		if(wordHorizontal[column-1] == wordVertical[row-1]){
+			smallest = table[row-1][column-1];
+		} else {
+			if(table[row-1][column-1] <= table[row][column-1] && table[row-1][column-1] <= table[row-1][column]){
+				smallest = table[row-1][column-1] +1;
+			}else if(table[row][column-1] <= table[row-1][column-1] && table[row][column-1] <= table[row-1][column]){
+				smallest = table[row][column-1] + 1;
+			}else{
+				smallest = table[row-1][column] + 1;
+			}
+		}
+		return smallest;
 	}
 	
 	

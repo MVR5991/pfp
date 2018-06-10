@@ -1,19 +1,28 @@
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+package oldWOrk;
 
-public class LevenshteinQueue extends Levenshtein {
+import java.util.concurrent.Exchanger;
 
+public class LevenshteinExchanger extends Levenshtein {
     private int levenStheinMatrix[][];
-    private ComputeLevenstheinQueueThread[] threads;
+    private ComputeLevenstheinThread[] threads;
+    private Exchanger[] exchanger;
     private int numberofThreads;
 
-    public LevenshteinQueue(int i) {
+    public LevenshteinExchanger(int i) {
         this.numberofThreads = i;
+    }
+
+    private void initialiseExchanger() {
+        exchanger = new Exchanger[numberofThreads - 1];
+        for (int x = 0; x < numberofThreads - 1; x++) {
+            exchanger[x] = new Exchanger();
+        }
     }
 
     @Override
     public int[][] computeLevenshtein(char[] wordHorizontal, char[] wordVertical) {
         levenStheinMatrix = new int[wordVertical.length + 1][wordHorizontal.length + 1];
+        initialiseExchanger();
         initialiseThreads(wordVertical, wordHorizontal);
         for (int x = 0; x < numberofThreads; x++) {
             try {
@@ -27,73 +36,87 @@ public class LevenshteinQueue extends Levenshtein {
     }
 
     private void initialiseThreads(char[] wordVertical, char[] wordHorizontal) {
-        threads = new ComputeLevenstheinQueueThread[numberofThreads];
+        threads = new ComputeLevenstheinThread[numberofThreads];
         int fromColumn = 0;
         int rowsPerThread = wordVertical.length / numberofThreads;
         int remainingThreads = wordVertical.length % numberofThreads;
         for (int x = 0; x < numberofThreads; x++) {
             if (remainingThreads != 0) {
-                threads[x] = new ComputeLevenstheinQueueThread(x, fromColumn, (fromColumn + rowsPerThread), levenStheinMatrix, wordHorizontal, wordVertical);
+                threads[x] = new ComputeLevenstheinThread(x, fromColumn, (fromColumn + rowsPerThread), levenStheinMatrix, wordHorizontal, wordVertical);
+                setExchangers(x);
                 fromColumn = fromColumn + rowsPerThread + 1;
                 remainingThreads--;
             } else {
-                threads[x] = new ComputeLevenstheinQueueThread(x, fromColumn, (fromColumn + rowsPerThread), levenStheinMatrix, wordHorizontal, wordVertical);
+                threads[x] = new ComputeLevenstheinThread(x, fromColumn, (fromColumn + rowsPerThread), levenStheinMatrix, wordHorizontal, wordVertical);
+                setExchangers(x);
                 fromColumn = fromColumn + rowsPerThread;
             }
-        }
-        for (int y = 0; y < numberofThreads - 1; y++) {
-            threads[y].setNextThread(threads[y + 1]);
-        }
-        for (int x = 0; x < numberofThreads; x++){
             threads[x].start();
         }
     }
 
-    class ComputeLevenstheinQueueThread extends Thread {
-        private int id;
+    private void setExchangers(int x) {
+        if (x == 0) {
+            if(exchanger.length > 0){
+                threads[x].setExchangerLeft(null);
+                threads[x].setExchangerRight(exchanger[x]);
+            }
+        } else if (x == numberofThreads - 1) {
+            threads[x].setExchangerLeft(exchanger[x - 1]);
+            threads[x].setExchangerRight(null);
+        } else {
+            threads[x].setExchangerLeft(exchanger[x - 1]);
+            threads[x].setExchangerRight(exchanger[x]);
+        }
+    }
+
+    class ComputeLevenstheinThread extends Thread {
         private int fromColumn;
         private int toColumn;
+        private Exchanger exchangerLeft;
+        private Exchanger exchangerRight;
         private int[][] levenStheinMatrix;
         private char[] wordHorizontal;
         private char[] wordVertical;
-        BlockingQueue fertigeZeilenQueue = new LinkedBlockingQueue();
 
-        public void setNextThread(ComputeLevenstheinQueueThread nextThread) {
-            this.nextThread = nextThread;
+
+        public void setExchangerLeft(Exchanger exchangerLeft) {
+            this.exchangerLeft = exchangerLeft;
         }
 
-        ComputeLevenstheinQueueThread nextThread;
+        public void setExchangerRight(Exchanger exchangerRight) {
+            this.exchangerRight = exchangerRight;
+        }
 
-        public ComputeLevenstheinQueueThread(int id, int fromColumn, int toColumn, int[][] levenStheinMatrix, char[] wordHorizontal, char[] wordVertical) {
+        public ComputeLevenstheinThread(int id, int fromColumn, int toColumn, int[][] levenStheinMatrix, char[] wordHorizontal, char[] wordVertical) {
             this.fromColumn = fromColumn;
             this.toColumn = toColumn;
             this.levenStheinMatrix = levenStheinMatrix;
             this.wordHorizontal = wordHorizontal;
             this.wordVertical = wordVertical;
-            this.id = id;
         }
-
 
         @Override
         public void run() {
             int rows = levenStheinMatrix[0].length;
 
+
             for (int j = 0; j < rows; j++) {
-                if (id != 0) {
+                if (exchangerLeft != null) {
                     try {
-                        fertigeZeilenQueue.take();
+                        exchangerLeft.exchange(null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
                 for (int i = fromColumn; i <= toColumn; i++) {
-//                    synchronized (LevenshteinExchanger.class) {
+                    synchronized (LevenshteinExchanger.class) {
                         levenStheinMatrix[i][j] = computeValue(i, j, levenStheinMatrix, wordHorizontal, wordVertical);
-//                    }
+                    }
                 }
-                if (nextThread!= null) {
+                if (exchangerRight != null) {
                     try {
-                        nextThread.fertigeZeilenQueue.put(true);
+                        exchangerRight.exchange(null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

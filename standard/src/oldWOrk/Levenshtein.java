@@ -1,6 +1,8 @@
+package oldWOrk;
+
 /**
  * 
- * Abstract base class for the Levenshtein distance
+ * Abstract base class for the oldWOrk.Levenshtein distance
  * 
  * @author Georg Dotzler
  * @author Marius Kamp
@@ -13,7 +15,7 @@ public abstract class Levenshtein {
 	 * 
 	 * @param row
 	 * @param column
-	 * @param table the half filled table with the Levenshtein distances of the prefixes.
+	 * @param table the half filled table with the oldWOrk.Levenshtein distances of the prefixes.
 	 * @param wordHorizontal the word used horizontal in the comparison
 	 * @param wordVertical the word used vertically in the comparison
 	 * @return
@@ -38,8 +40,8 @@ public abstract class Levenshtein {
 	
 
 	/**
-	 * Returns the matrix that represents the Levenshtein distances between
-	 * all prefixes of the two words. The Levenshtein distance between both words is found
+	 * Returns the matrix that represents the oldWOrk.Levenshtein distances between
+	 * all prefixes of the two words. The oldWOrk.Levenshtein distance between both words is found
 	 * at matrix[wordVertical.length()-1][wordHorizontal.length()-1].
 	 * @param wordHorizontal first word, used horizontal in the matrix
 	 * @param wordVertical second word, used vertical in the matrix

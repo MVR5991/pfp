@@ -1,6 +1,7 @@
+package oldWOrk;
+
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +9,7 @@ import org.junit.Test;
 
 /**
  * 
- * Simple test suite for the Levenshtein distance
+ * Simple test suite for the oldWOrk.Levenshtein distance
  * Examples taken from 
  * http://de.wikipedia.org/wiki/Levenshtein-Distanz
  * http://en.wikipedia.org/wiki/Levenshtein_distance
@@ -82,7 +83,7 @@ public class LevenshteinTest {
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 3);
-		print(solution);
+//		print(solution);
 	}
 
 
@@ -95,7 +96,7 @@ public class LevenshteinTest {
 		assertNotNull(solution);
 		assertNotNull(solution[0]);
 		assertEquals(solution[solution.length-1][solution[0].length-1], 2);
-		print(solution);
+//		print(solution);
 	}
 
 	
@@ -166,7 +167,7 @@ public class LevenshteinTest {
 
 	@Test
 	public void testKittenExchanger() {
-		final Levenshtein l = new LevenshteinExchanger(4);
+		final Levenshtein l = new LevenshteinExchanger(20);
 
 		int[][] solution = l.computeLevenshtein("kitten".toCharArray(), "sitting".toCharArray());
 

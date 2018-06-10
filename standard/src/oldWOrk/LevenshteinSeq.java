@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public class LevenshteinSeq extends Levenshtein {
 
     @Override

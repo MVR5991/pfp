@@ -13,7 +13,7 @@ public class GameOfLifeTest {
 	@Parameters(name = "{index}: {2}")
 	public static Iterable<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-				{ new GameOfLifeSeq(), 1, "Sequential Version" },
+//				{ new GameOfLifeSeq(), 1, "Sequential Version" },
 				{ new GameOfLifePar(), 1, "Parallel Version - 1 Thread" },
 				{ new GameOfLifePar(), 2, "Parallel Version - 2 Threads" },
 				{ new GameOfLifePar(), 3, "Parallel Version - 3 Threads" },
@@ -48,29 +48,29 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlock() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
 				GameOfLife.PATTERN_BLOCK, 4, 4, 1, 1);
 		int[][] refPosition = GameOfLife.getBoardFromRLE(
 				GameOfLife.PATTERN_BLOCK, 4, 4, 1, 1);
-		gameOfLife.compute(initialGameState, threads, 0, 100, 1, 0, true, false);
+		gameOfLife.compute(initialGameState, threads, 0, 100, 1, 0, false, false);
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder00() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
 				GameOfLife.PATTERN_BLOCK, 5, 5, 0, 0);
 		int[][] refPosition = GameOfLife.getBoardFromRLE(
 				GameOfLife.PATTERN_BLOCK, 5, 5, 0, 0);
-		gameOfLife.compute(initialGameState, threads, 50, 100, 1, 1000, true, false);
+		gameOfLife.compute(initialGameState, threads, 50, 100, 1, 1000, false, false);
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder01() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -81,7 +81,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder02() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -103,7 +103,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder10() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -114,7 +114,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder20() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -125,7 +125,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder30() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -136,7 +136,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder31() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -147,7 +147,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder32() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -158,7 +158,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder33() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -169,7 +169,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder13() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -180,7 +180,7 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBlockBorder23() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
@@ -191,14 +191,14 @@ public class GameOfLifeTest {
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}
-	
+
 	@Test
 	public void testBeehive() {
 		int[][] initialGameState = GameOfLife.getBoardFromRLE(
 				GameOfLife.PATTERN_BEEHIVE, 10, 10, 1, 1);
 		int[][] refPosition = GameOfLife.getBoardFromRLE(
 				GameOfLife.PATTERN_BEEHIVE, 10, 10, 1, 1);
-//		gameOfLife.compute(initialGameState, threads, 0, 100, 1, 0, false, false);
+		gameOfLife.compute(initialGameState, threads, 0, 100, 1, 0, false, false);
 		int[][] endPosition = gameOfLife.getEndPosition();
 		assertArrayEquals(refPosition, endPosition);
 	}

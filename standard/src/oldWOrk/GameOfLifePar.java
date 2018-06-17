@@ -1,3 +1,5 @@
+package oldWOrk;
+
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,7 +61,11 @@ public class GameOfLifePar extends GameOfLife {
                     e.printStackTrace();
                 }
             while (barrier.getNumberWaiting() != numberOfThreads) {
-                sleep();
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             currentGameState = newBoard;
             currentGeneration.getAndIncrement();

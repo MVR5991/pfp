@@ -1,3 +1,5 @@
+package oldWOrk;
+
 /**
  * 
  * Implements Conway's Game of Life. See <a
@@ -279,12 +281,12 @@ public abstract class GameOfLife {
 		GameOfLife gameOfLife = new GameOfLifePar();
 		int[][] initialGameState = null;
 		initialGameState = getBoardFromRLE(GameOfLife.PATTERN_DIE_HARD, 300, 300, 50, 50);
-		//initialGameState =	 getBoardFromRLE(GameOfLife.PATTERN_GOSPER_GLIDER_GUN, 100, 100, -1, -1);
-		//initialGameState = getBoardFromRLE(GameOfLife.PATTERN_BLOCK, 4, 4, -1, -1);
+		//initialGameState =	 getBoardFromRLE(oldWOrk.GameOfLife.PATTERN_GOSPER_GLIDER_GUN, 100, 100, -1, -1);
+		//initialGameState = getBoardFromRLE(oldWOrk.GameOfLife.PATTERN_BLOCK, 4, 4, -1, -1);
 		gameOfLife.compute(initialGameState, 8, 4, 10000, 1, 50, true, false);
 
 		// Large Example:
-//		 initialGameState = getBoardFromRLE(GameOfLife.PATTERN_BREEDER_1,
+//		 initialGameState = getBoardFromRLE(oldWOrk.GameOfLife.PATTERN_BREEDER_1,
 //		 2000, 2000, 0, 0);
 //		 gameOfLife.compute(initialGameState, 8, 3, 10000, 1, 50, true, false);
 	}

@@ -1,3 +1,5 @@
+package oldWOrk;
+
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -13,7 +15,7 @@ public class GameOfLifeTest {
 	@Parameters(name = "{index}: {2}")
 	public static Iterable<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-//				{ new GameOfLifeSeq(), 1, "Sequential Version" },
+//				{ new oldWOrk.GameOfLifeSeq(), 1, "Sequential Version" },
 				{ new GameOfLifePar(), 1, "Parallel Version - 1 Thread" },
 				{ new GameOfLifePar(), 2, "Parallel Version - 2 Threads" },
 				{ new GameOfLifePar(), 3, "Parallel Version - 3 Threads" },
@@ -390,13 +392,13 @@ public class GameOfLifeTest {
 //	@Test
 //	public void testBreeder() {
 //		if (threads == 8) {
-//			int[][] initialGameState = GameOfLife.getBoardFromRLE(
-//					GameOfLife.PATTERN_BREEDER_1, 5000, 5000, -1, -1);
+//			int[][] initialGameState = oldWOrk.GameOfLife.getBoardFromRLE(
+//					oldWOrk.GameOfLife.PATTERN_BREEDER_1, 5000, 5000, -1, -1);
 //			long timeStart = System.currentTimeMillis();
 //			gameOfLife.compute(initialGameState, threads, 10, 5206, 5206, 0,
 //					false, false);
 //			long timePar = System.currentTimeMillis() - timeStart;
-//			GameOfLife seq = new GameOfLifeSeq();
+//			oldWOrk.GameOfLife seq = new oldWOrk.GameOfLifeSeq();
 //			timeStart = System.currentTimeMillis();
 //			seq.compute(initialGameState, threads, 10, 5206, 5206, 0, false, false);
 //

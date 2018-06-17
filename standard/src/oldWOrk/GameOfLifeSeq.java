@@ -1,3 +1,5 @@
+package oldWOrk;
+
 public class GameOfLifeSeq extends GameOfLife{
 
     int[][] currentGameState;

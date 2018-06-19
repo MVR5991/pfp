@@ -17,8 +17,8 @@ public class DijkstraTest {
 			{ -1,  2,  6, -1,  3,  0 }
 		};
 		final int[] expected = { 0, 8, 1, 5, 10, 7 };
-
-		assertArrayEquals(expected, Dijkstra.findShortestPaths(adjacencyMatrix, 0));
+		final int[] result = Dijkstra.findShortestPaths(adjacencyMatrix, 0);
+		assertArrayEquals(expected,result );
 	}
 
 
@@ -33,8 +33,8 @@ public class DijkstraTest {
 			{  5, 12, -1, -1,  0 }
 		};
 		final int[] expected = { 5, 10, 8, 11, 0 };
-
-		assertArrayEquals(expected, Dijkstra.findShortestPaths(adjacencyMatrix, 4));
+		final int[] result = Dijkstra.findShortestPaths(adjacencyMatrix, 4);
+		assertArrayEquals(expected, result);
 	}
 }
 

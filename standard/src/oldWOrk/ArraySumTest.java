@@ -1,8 +1,8 @@
 package oldWOrk;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  * Small example JUnit test to find bugs in the own implementation.

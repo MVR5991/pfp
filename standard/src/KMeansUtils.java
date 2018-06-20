@@ -1,9 +1,4 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -60,7 +55,6 @@ public class KMeansUtils {
 		final List<List<Double>> vectors = new ArrayList<>();
 		final List<Integer> classes = new ArrayList<>();
 		final Map<String, Integer> classMap = new HashMap<>();
-
 		try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -92,7 +86,7 @@ public class KMeansUtils {
 	public static void writeIrisGnuplotScript(final String scriptFileName, final String dataFileName,
 			final Pair<List<List<Double>>, List<Integer>> dataSet,
 			final List<List<Double>> centroids) throws IOException {
-		
+
 		writeGnuplotScript(scriptFileName, dataFileName, "Clustering on Iris data set",
 				0, 2, 3, "sepal length", "petal length", "petal width", dataSet.getFirst(),
 				dataSet.getSecond(), centroids);
@@ -106,7 +100,7 @@ public class KMeansUtils {
 	public static void writeMAGICGnuplotScript(final String scriptFileName,
 			final String dataFileName, final Pair<List<List<Double>>, List<Integer>> dataSet,
 			final List<List<Double>> centroids) throws IOException {
-		
+
 		writeGnuplotScript(scriptFileName, dataFileName, "Clustering on MAGIC data set",
 				0, 5, 6, "fLength", "fAsym", "fM3Long", dataSet.getFirst(), dataSet.getSecond(),
 				centroids);
@@ -120,7 +114,7 @@ public class KMeansUtils {
 	public static void writeISOLETGnuplotScript(final String scriptFileName,
 			final String dataFileName, final Pair<List<List<Double>>, List<Integer>> dataSet,
 			final List<List<Double>> centroids) throws IOException {
-		
+
 		// Order of features is not known...
 		writeGnuplotScript(scriptFileName, dataFileName, "Clustering on ISOLET data set",
 				102, 440, 470, "x", "y", "z", dataSet.getFirst(), dataSet.getSecond(), centroids);
@@ -136,10 +130,10 @@ public class KMeansUtils {
 
 		final Map<Integer, Integer> clusterIndexToClassMap = new HashMap<>();
 		associateClustersWithLabels(dataPoints, classes, centroids, clusterIndexToClassMap);
-		
+
 		try (final PrintWriter writer = new PrintWriter(new BufferedWriter(
 				new FileWriter(scriptFileName)))) {
-			
+
 			writer.println("set title \"" + title + "\"");
 			writer.println("set xlabel \"" + firstLabel + "\"");
 			writer.println("set ylabel \"" + secondLabel + "\"");
@@ -227,24 +221,81 @@ public class KMeansUtils {
 		return Math.sqrt(distSquared);
 	}
 
-
-
 	/**
 	 * Returns the precision of a clustering.
 	 */
 	public static double getPrecision(final List<List<Double>> dataSet, final List<Integer> classes,
 			final List<List<Double>> centroids) {
-		
+
 		return (double) associateClustersWithLabels(dataSet, classes, centroids, null)
 				/ dataSet.size();
 	}
 
+	/**
+	 * Returns a list of vectors that may be used to bootstrap the k-means
+	 * clustering.
+	 */
+	public static List<List<Double>> getInitialCentroids(final List<List<Double>> dataSet,
+			final int numberOfCentroids) {
 
+		final Random rng = new Random(1);
+		final int NUM_CANDS = 3;
+
+		final List<List<List<Double>>> candidates = new ArrayList<>(NUM_CANDS);
+		for (int k = 0; k < NUM_CANDS; ++k) {
+			final List<List<Double>> candidate = new ArrayList<>(numberOfCentroids);
+
+			final double[] distances = new double[dataSet.size()];
+			for (int i = 0; i < distances.length; ++i) {
+				distances[i] = Double.POSITIVE_INFINITY;
+			}
+
+			for (int j = 0; j < numberOfCentroids; ++j) {
+				List<Double> newCentroid = dataSet.get(dataSet.size() - 1);
+				if (candidate.isEmpty()) {
+					newCentroid = dataSet.get(rng.nextInt(dataSet.size()));
+				} else {
+					double distancesSum = 0.0;
+					for (int i = 0; i < distances.length; ++i) {
+						distancesSum += distances[i];
+					}
+
+					double selector = rng.nextDouble() * distancesSum;
+					for (int i = 0; i < distances.length; ++i) {
+						selector -= distances[i];
+						if (selector <= 0) {
+							newCentroid = dataSet.get(i);
+							break;
+						}
+					}
+				}
+
+				for (int i = 0; i < distances.length; ++i) {
+					final double distance = distance(dataSet.get(i), newCentroid);
+					distances[i] = Math.min(distances[i], distance * distance);
+				}
+
+				candidate.add(newCentroid);
+			}
+
+			candidates.add(candidate);
+		}
+
+		final List<List<Double>> result = Collections.max(candidates,
+				new Comparator<List<List<Double>>>() {
+					@Override
+					public int compare(final List<List<Double>> first, final List<List<Double>> second) {
+						return Double.compare(minComponentDifference(first), minComponentDifference(second));
+					}
+				});
+
+		return result;
+	}
 
 	private static int associateClustersWithLabels(final List<List<Double>> dataSet,
-			final List<Integer> classes, final List<List<Double>> centroids,
-			final Map<Integer, Integer> clusterIndexToClassMap) {
-		
+												   final List<Integer> classes, final List<List<Double>> centroids,
+												   final Map<Integer, Integer> clusterIndexToClassMap) {
+
 		final Set<Integer> classSet = new HashSet<>(classes);
 		final int numberOfClasses = centroids.size();
 		final List<List<Integer>> clusteredDataSet = new ArrayList<>();
@@ -323,7 +374,7 @@ public class KMeansUtils {
 				currentClusterToClassMap.put(clusterIndex, bestIndex);
 			} else if (correctlyLabeledMap.get(new Pair<>(
 					currentClassToClusterMap.get(bestIndex), bestIndex)) < bestCorrectlyLabeled) {
-				
+
 				currentClusterToClassMap.remove(currentClassToClusterMap.get(bestIndex));
 				currentClassToClusterMap.put(bestIndex, clusterIndex);
 				currentClusterToClassMap.put(clusterIndex, bestIndex);
@@ -376,7 +427,6 @@ public class KMeansUtils {
 	}
 
 
-
 	private static boolean before(final List<Double> vector1, final List<Double> vector2) {
 		for (int i = 0; i < vector1.size(); ++i) {
 			if (vector1.get(i) < vector2.get(i)) {
@@ -387,70 +437,6 @@ public class KMeansUtils {
 		}
 		return false;
 	}
-
-
-
-	/**
-	 * Returns a list of vectors that may be used to bootstrap the k-means
-	 * clustering.
-	 */
-	public static List<List<Double>> getInitialCentroids(final List<List<Double>> dataSet,
-			final int numberOfCentroids) {
-		
-		final Random rng = new Random(1);
-		final int NUM_CANDS = 3;
-
-		final List<List<List<Double>>> candidates = new ArrayList<>(NUM_CANDS);
-		for (int k = 0; k < NUM_CANDS; ++k) {
-			final List<List<Double>> candidate = new ArrayList<>(numberOfCentroids);
-
-			final double[] distances = new double[dataSet.size()];
-			for (int i = 0; i < distances.length; ++i) {
-				distances[i] = Double.POSITIVE_INFINITY;
-			}
-
-			for (int j = 0; j < numberOfCentroids; ++j) {
-				List<Double> newCentroid = dataSet.get(dataSet.size() - 1);
-				if (candidate.isEmpty()) {
-					newCentroid = dataSet.get(rng.nextInt(dataSet.size()));
-				} else {
-					double distancesSum = 0.0;
-					for (int i = 0; i < distances.length; ++i) {
-						distancesSum += distances[i];
-					}
-
-					double selector = rng.nextDouble() * distancesSum;
-					for (int i = 0; i < distances.length; ++i) {
-						selector -= distances[i];
-						if (selector <= 0) {
-							newCentroid = dataSet.get(i);
-							break;
-						}
-					}
-				}
-
-				for (int i = 0; i < distances.length; ++i) {
-					final double distance = distance(dataSet.get(i), newCentroid);
-					distances[i] = Math.min(distances[i], distance * distance);
-				}
-
-				candidate.add(newCentroid);
-			}
-
-			candidates.add(candidate);
-		}
-
-		final List<List<Double>> result = Collections.max(candidates,
-				new Comparator<List<List<Double>>>() {
-					@Override
-					public int compare(final List<List<Double>> first, final List<List<Double>> second) {
-						return Double.compare(minComponentDifference(first), minComponentDifference(second));
-					}
-				});
-
-		return result;
-	}
-
 
 
 	private static double minComponentDifference(final List<List<Double>> vec) {

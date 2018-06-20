@@ -47,7 +47,7 @@ public class Dijkstra {
      */
     public static int[] findShortestPaths(final int[][] adjacencyMatrix, final int startNode) {
         Dijkstra.adjacencyMatrix = adjacencyMatrix;
-        MapReduce mapReduce = new SequentialMapReduce(new DijkstraMapper(), new DijkstraReducer());
+        MapReduce mapReduce = new ParallelMapReduce(new DijkstraMapper(), new DijkstraReducer(),2);
         List<Pair<Integer, Pair>> list = new ArrayList<>();
         list.add(new Pair(startNode,new Pair<Integer, List>(0,findeNachfolger(startNode, adjacencyMatrix))));
         Iterable oldList = null;
